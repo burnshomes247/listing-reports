@@ -337,30 +337,50 @@ async function fetchData() {
       </div>`;
 
     // Render chart
-    const maxViews = Math.max(...dailyRows.map(r => parseInt(r.metricValues[0].value)), 1);
-    const MAX_H = 88;
-    // Show up to 20 bars, sample if more
-    let chartRows = dailyRows;
-    if (dailyRows.length > 20) {
-      const step = Math.floor(dailyRows.length / 20);
-      chartRows = dailyRows.filter((_, i) => i % step === 0).slice(0, 20);
+    // Render line chart
+    const dr = dailyRows;
+    if (!dr.length) {
+      document.getElementById('chart-wrap').innerHTML = '<div class="loading">No data for this period</div>';
+    } else {
+      const vals = dr.map(r => parseInt(r.metricValues[0].value));
+      const maxV = Math.max(...vals, 1);
+      const W = 580, H = 100, PAD_L = 28, PAD_R = 8, PAD_T = 8, PAD_B = 20;
+      const iW = W - PAD_L - PAD_R, iH = H - PAD_T - PAD_B;
+      const px = (i) => PAD_L + (i / (dr.length - 1 || 1)) * iW;
+      const py = (v) => PAD_T + iH - (v / maxV) * iH;
+      let gridLines = '';
+      [0, 0.5, 1].forEach(t => {
+        const y = PAD_T + iH - t * iH;
+        gridLines += '<line x1="' + PAD_L + '" y1="' + y + '" x2="' + (W-PAD_R) + '" y2="' + y + '" stroke="#eee" stroke-width="0.5"/>';
+        gridLines += '<text x="' + (PAD_L-3) + '" y="' + (y+3) + '" font-size="6" fill="#aaa" text-anchor="end">' + Math.round(t*maxV) + '</text>';
+      });
+      let areaPath = 'M ' + px(0) + ' ' + py(vals[0]);
+      vals.forEach((v,i) => { if(i>0) areaPath += ' L ' + px(i) + ' ' + py(v); });
+      const areaClose = ' L ' + px(vals.length-1) + ' ' + (PAD_T+iH) + ' L ' + PAD_L + ' ' + (PAD_T+iH) + ' Z';
+      let linePath = 'M ' + px(0) + ' ' + py(vals[0]);
+      vals.forEach((v,i) => { if(i>0) linePath += ' L ' + px(i) + ' ' + py(v); });
+      const peakV = Math.max(...vals);
+      let dots = '';
+      vals.forEach((v,i) => { if(v===peakV) dots += '<circle cx="' + px(i) + '" cy="' + py(v) + '" r="3" fill="#5b8db8"/>'; });
+      let xLabels = '';
+      const step = Math.max(1, Math.floor(dr.length/6));
+      dr.forEach((r,i) => {
+        if(i%step===0 || i===dr.length-1) {
+          const d = r.dimensionValues[0].value;
+          const lbl = d.slice(4,6)+'/'+d.slice(6,8);
+          xLabels += '<text x="' + px(i) + '" y="' + H + '" font-size="6" fill="#aaa" text-anchor="middle">' + lbl + '</text>';
+        }
+      });
+      document.getElementById('chart-wrap').innerHTML =
+        '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">' +
+        '<defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1c3668" stop-opacity="0.15"/><stop offset="100%" stop-color="#1c3668" stop-opacity="0.01"/></linearGradient></defs>' +
+        gridLines +
+        '<path d="' + areaPath + areaClose + '" fill="url(#ag)"/>' +
+        '<path d="' + linePath + '" fill="none" stroke="#1c3668" stroke-width="1.5"/>' +
+        dots + xLabels + '</svg>' +
+        '<div class="legend"><div class="legend-item"><div class="legend-dot" style="background:#1c3668"></div>Daily views</div>' +
+        '<div class="legend-item"><div class="legend-dot" style="background:#5b8db8;border-radius:50%"></div>Peak day</div></div>';
     }
-    const barHtml = chartRows.map(r => {
-      const d = r.dimensionValues[0].value;
-      const v = parseInt(r.metricValues[0].value);
-      const h = Math.max(3, Math.round((v / maxViews) * MAX_H));
-      const lbl = (d.slice(4,6) + '/' + d.slice(6,8));
-      const color = v === Math.max(...dailyRows.map(r2 => parseInt(r2.metricValues[0].value))) ? '#5b8db8' : '#1c3668';
-      return `<div class="bar-col"><div class="bar" style="height:${h}px;background:${color}" title="${v} views on ${lbl}"></div><div class="bar-lbl">${lbl}</div></div>`;
-    }).join('');
-
-    document.getElementById('chart-wrap').innerHTML = `
-      <div class="bars">${barHtml || '<div class="loading">No data for this period</div>'}</div>
-      <div class="chart-baseline"></div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#1c3668"></div>Daily views</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#5b8db8"></div>Peak day</div>
-      </div>`;
 
     // Render breakdown
     const totalSessions = sourceRows.reduce((s, r) => s + parseInt(r.metricValues[0].value), 0) || 1;
