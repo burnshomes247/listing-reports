@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Active Listings Dashboard · BURNSHOMES</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #e8e8e8; padding: 24px; font-family: Georgia, 'Times New Roman', serif; min-height: 100vh; }
+.page { width: 100%; max-width: 760px; background: #fff; margin: 0 auto; position: relative; }
+.border-outer { position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px; border: 1px solid #1a1a1a; pointer-events: none; z-index: 2; }
+.border-inner { position: absolute; top: 19px; left: 19px; right: 19px; bottom: 19px; border: 0.4px solid #1a1a1a; pointer-events: none; z-index: 2; }
+.content { position: relative; z-index: 1; padding: 40px 56px; display: flex; flex-direction: column; align-items: center; }
+.logo-wrap { margin-top: 8px; width: 56px; height: 56px; }
+.logo-wrap img { width: 56px; height: 56px; display: block; border-radius: 50%; }
+.header-rule { width: calc(100% - 40px); height: 0.6px; background: #1a1a1a; margin-top: 14px; }
+.page-title { margin-top: 18px; font-size: 18pt; font-weight: bold; letter-spacing: 0.04em; color: #1a1a1a; text-align: center; text-transform: uppercase; }
+.title-rule { width: 160px; height: 0.5px; background: #1a1a1a; margin-top: 10px; }
+.date-line { font-size: 8pt; letter-spacing: 0.14em; color: #888; margin-top: 8px; text-align: center; text-transform: uppercase; }
+.section-rule { width: calc(100% - 40px); height: 0.6px; background: #1a1a1a; margin-top: 24px; }
+.section-label { font-size: 7pt; letter-spacing: 0.28em; color: #888; margin-top: 10px; text-align: center; text-transform: uppercase; }
+.loading { text-align: center; padding: 30px; font-size: 8pt; letter-spacing: 0.2em; color: #888; text-transform: uppercase; }
+
+/* Table */
+.dash-table { width: 100%; margin-top: 16px; border-collapse: collapse; }
+.dash-table th { font-size: 7pt; letter-spacing: 0.2em; color: #888; text-transform: uppercase; padding: 8px 10px; border-bottom: 0.5px solid #1a1a1a; text-align: left; font-weight: normal; }
+.dash-table th:not(:first-child) { text-align: center; }
+.dash-table td { font-size: 9pt; letter-spacing: 0.05em; color: #1a1a1a; padding: 12px 10px; border-bottom: 0.4px solid #e8e8e8; vertical-align: middle; }
+.dash-table td:not(:first-child) { text-align: center; }
+.dash-table tr:last-child td { border-bottom: none; }
+.dash-table tr:hover td { background: #f9f9f9; }
+.address-cell { font-weight: bold; text-transform: uppercase; font-size: 8pt; letter-spacing: 0.08em; }
+.metric-val { font-size: 14pt; font-weight: bold; color: #1c3668; line-height: 1; display: block; }
+.metric-lbl { font-size: 6pt; letter-spacing: 0.1em; color: #aaa; text-transform: uppercase; display: block; margin-top: 2px; }
+.report-link { font-size: 7pt; letter-spacing: 0.12em; color: #1c3668; text-transform: uppercase; text-decoration: none; border-bottom: 0.5px solid #1c3668; padding-bottom: 1px; }
+.report-link:hover { color: #5b8db8; border-color: #5b8db8; }
+.total-row td { border-top: 0.6px solid #1a1a1a; border-bottom: none; padding-top: 14px; }
+.total-row .metric-val { color: #888; font-size: 12pt; }
+
+.footer-rule { width: calc(100% - 40px); height: 0.6px; background: #1a1a1a; margin-top: 24px; }
+.footer-text { font-size: 7pt; letter-spacing: 0.1em; color: #bbb; text-align: center; margin-top: 10px; line-height: 2; text-transform: uppercase; margin-bottom: 8px; }
+.footer-name { font-size: 7.5pt; letter-spacing: 0.16em; color: #1a1a1a; font-weight: bold; }
+.refresh-note { font-size: 6.5pt; letter-spacing: 0.1em; color: #ccc; text-align: center; margin-top: 6px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="border-outer"></div>
+  <div class="border-inner"></div>
+  <div class="content">
+
+    <div class="logo-wrap">
+      <img src="https://raw.githubusercontent.com/burnshomes247/listings/main/burnshomes-logo.png" alt="BURNSHOMES">
+    </div>
+
+    <div class="header-rule"></div>
+    <div class="page-title">Active Listings Dashboard</div>
+    <div class="title-rule"></div>
+    <div class="date-line" id="date-line">Last 30 days · Loading...</div>
+
+    <div class="section-rule"></div>
+    <div class="section-label">Traffic Summary — All Active Listings</div>
+
+    <div id="table-wrap" style="width:100%">
+      <div class="loading">Fetching live data for all listings...</div>
+    </div>
+
+    <div class="footer-rule"></div>
+    <div class="footer-text">
+      <div class="footer-name">Mike Burns · BURNSHOMES · RE/MAX Allegiance</div>
+      (703) 403-2022 · mike@burnshomes.com · burnshomes.com<br>
+      Data source: Google Analytics · Updates automatically
+    </div>
+    <div class="refresh-note" id="refresh-note"></div>
+
+  </div>
+</div>
+
+<script>
+const GA4_PROPERTY_ID = '533922241';
+const SA_EMAIL = 'burnshomes-ga4-reader@burnshomes-reports.iam.gserviceaccount.com';
+const SA_KEY = `-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/hBZLnQpB9ytM
+VFCYGAEaHiL5500g2frFKuCACUYClZKbRzv9sNe53tJAJWxhK8VvpKPMJqFr9Z4t
+o3HQULwLPt+TYHGnlHVNrH546Bs7j/YacE7P5ezxqGMTWg7pc0SnKtSQLKRhZS0I
+xWkv61nSdViN96wadDPF82T27+ZoJm78iElru28tDBwbOGa5Tm3Q2INpfSqHAJqM
+tWo4n7Opa9gkZBGAemNWla2HNV9iB2RunH06JzE3yj4aTWgiTLBd/WPVoYGCgwli
+ycLgtux3+XuOCiwx47uJfwO9rUf9kXF2YpS0yBnVrXMnR3SRa4MHInc+8rvsIxIy
+O2u3krE7AgMBAAECggEAH09+f6UwiKFaxFNii8Mc5wK3UCkHHJBWpcaBRp19gy2l
+9tn6DltLoZkywYb8xZQs5rhBiT5llKtmzWpT0K1qWOJSFhul6TJlzSme0bCMxzud
+jiv/TpD2IHoZnI/UMUmFl1jywJFz3HJ4nt77d/ifyj8iF6++xOJrlnjY8GA/SJZ7
+LbAPmc8z2hnLypxluCbGeI+3sJsm4xFhueZPFGWkeui0x0Dz/8UQPyFBeyha8R8q
+k8vIEIP2QW9NNOp8aXRFkaG/fMHzE+ShQe0F6RaV9LtKVyt8iV3a3Xdw+xZe3oCS
+D+/VWdltOjT8XmCntw8sc1cUPnhnRdYWykTRb3HzYQKBgQD2UtQOdmETi0elrFr6
+pQdnGAM0sYjsYGWNaEZ5S3kDESXzhA2eHz3uQVf8+beZt0fUJ7BHYkCDZlOEbOEy
+wBHWfYpIcWA+xXAHg7rsUusT2QqRTxVn5QDvitq8Spj2MM9UwjQPK0SXBBUzOXJd
+p54DAHPTNwUrzTz4mNucQds8GwKBgQDHChUDbC1ErPIczR4j2ZWz13KKVeCvx6xF
+ZC287juihUwyQVJ9inlGttopTBzG1pneKyytNHkr6kyNEHQ3fNqlXND6q5Ocgf6D
+/Y/7nvmu/ezk9GDy3vs71FgS99sDeFuxoLk2eKmhVrJc4OTSG9M44oH4liuqqPFv
+I5FlJ3txYQKBgHTbWJS/3k/6THQxbzvnXLqw7pxp+Q5CsQrDxGM4xeEJmpqLNDam
+lafZQhfWlB6Nj7r7VSqYVwi/W7HAQZnk+tFp31d8ye8dlYdLHDuPHszcs6G6Beqy
+/p2lnx2iuixZfZK1SyNDIJgQLMqPX01E/rZn2YsDWCWuiVValxzrNUmvAoGAfWAq
+cGd59GKEeAP00lxC4m/6JI2H5PH/4A4EiZf/VJZmstlW3uGVFygjMBRTpCSV8856
+a/g7w5/o7IrKyhEJoVRgByaA6vsvmXDle3heiw5EZMxTLWmsE7nkaL5b5UmxaKh3
+QoqrP4fe/oZjXL5OROzZNf9SLkQRIRLkiTVfmsECgYEAoo31bKIImLpL2E4SYIXW
+ZSGlS9YPcqsJbxiXNar8G6Jq8BR84+j2l9DFp1LKS/W4tKWJMpQ4uqaC5JRVHDgR
+M6xbYyWoTSTaS3Cd2CgD6ZV4e61/vnRTgeKfDW10KOWLslqIncIiMpyEfKuYijyk
+a1T3Netau/wcNKk8e9f84Is=
+-----END PRIVATE KEY-----`;
+
+// ACTIVE LISTINGS — remove sold properties from this list
+const LISTINGS = [
+  { address: '648 F Street NE · Washington, DC',        path: '/listings/648-F-Street', report: '648-f-street.html' },
+  { address: '1223 Talbert St SE · Washington, DC',     path: '/listings/1223-talbert', report: '1223-talbert-report.html' },
+  { address: '1544 N Colonial Terrace · Arlington, VA', path: '/listings/1544ncolonialterrace', report: '1544-colonial-terrace-report.html' },
+  { address: '215 I Street NE · Washington, DC',        path: '/listings/215-I-Street', report: '215-i-street-report.html' },
+  { address: '326 East D Street · Washington, DC',      path: '/listings/326eastdstreet', report: '326-east-d-street-report.html' },
+  { address: '4620 Rosedale Avenue · Bethesda, MD',     path: '/listings/4620rosedaleavenue', report: '4620-rosedale-avenue-report.html' },
+];
+
+function base64url(str) { return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,''); }
+function base64urlUint8(b) { let s=''; b.forEach(x=>s+=String.fromCharCode(x)); return base64url(s); }
+
+async function getToken() {
+  const h={alg:'RS256',typ:'JWT'}, now=Math.floor(Date.now()/1000);
+  const c={iss:SA_EMAIL,scope:'https://www.googleapis.com/auth/analytics.readonly',aud:'https://oauth2.googleapis.com/token',exp:now+3600,iat:now};
+  const toSign=base64url(JSON.stringify(h))+'.'+base64url(JSON.stringify(c));
+  const pem=SA_KEY.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\n/g,'');
+  const der=Uint8Array.from(atob(pem),c=>c.charCodeAt(0));
+  const key=await crypto.subtle.importKey('pkcs8',der.buffer,{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['sign']);
+  const sig=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',key,new TextEncoder().encode(toSign));
+  const jwt=toSign+'.'+base64urlUint8(new Uint8Array(sig));
+  const r=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`});
+  return (await r.json()).access_token;
+}
+
+async function fetchListing(token, listing, startDate, endDate) {
+  const url = `https://analyticsdata.googleapis.com/v1beta/properties/${GA4_PROPERTY_ID}:runReport`;
+  const h = {'Authorization':'Bearer '+token,'Content-Type':'application/json'};
+  const f = {filter:{fieldName:'pagePath',stringFilter:{matchType:'CONTAINS',value:listing.path}}};
+  const resp = await fetch(url, {
+    method:'POST', headers:h,
+    body: JSON.stringify({
+      dateRanges:[{startDate,endDate}],
+      metrics:[{name:'screenPageViews'},{name:'activeUsers'}],
+      dimensionFilter:f
+    })
+  });
+  const data = await resp.json();
+  const row = data.rows?.[0]?.metricValues || [{value:'0'},{value:'0'}];
+  return {
+    views: parseInt(row[0].value),
+    users: parseInt(row[1].value)
+  };
+}
+
+function fmtDisplay(s) {
+  const d=new Date(s+'T00:00:00');
+  return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+}
+
+async function init() {
+  const end = new Date();
+  const start = new Date();
+  start.setDate(start.getDate()-30);
+  const startDate = start.toISOString().split('T')[0];
+  const endDate = end.toISOString().split('T')[0];
+
+  document.getElementById('date-line').textContent =
+    'Last 30 days · ' + fmtDisplay(startDate) + ' – ' + fmtDisplay(endDate);
+
+  try {
+    const token = await getToken();
+
+    // Fetch all listings in parallel
+    const results = await Promise.all(
+      LISTINGS.map(l => fetchListing(token, l, startDate, endDate))
+    );
+
+    const totalViews = results.reduce((s,r)=>s+r.views,0);
+    const totalUsers = results.reduce((s,r)=>s+r.users,0);
+
+    let rows = LISTINGS.map((l,i) => `
+      <tr>
+        <td class="address-cell">${l.address}</td>
+        <td><span class="metric-val">${results[i].views.toLocaleString()}</span><span class="metric-lbl">Views</span></td>
+        <td><span class="metric-val">${results[i].users.toLocaleString()}</span><span class="metric-lbl">Visitors</span></td>
+        <td><a class="report-link" href="${l.report}" target="_blank">Full Report →</a></td>
+      </tr>`).join('');
+
+    document.getElementById('table-wrap').innerHTML = `
+      <table class="dash-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Total Views</th>
+            <th>Unique Visitors</th>
+            <th>Report</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+          <tr class="total-row">
+            <td class="address-cell" style="color:#888">All Active Listings</td>
+            <td><span class="metric-val">${totalViews.toLocaleString()}</span><span class="metric-lbl">Total Views</span></td>
+            <td><span class="metric-val">${totalUsers.toLocaleString()}</span><span class="metric-lbl">Total Visitors</span></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>`;
+
+    document.getElementById('refresh-note').textContent =
+      'Loaded ' + new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+
+  } catch(e) {
+    document.getElementById('table-wrap').innerHTML =
+      '<div class="loading" style="color:#c00">Error loading data: ' + e.message + '</div>';
+  }
+}
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
