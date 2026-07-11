@@ -149,7 +149,7 @@ body {
 <script>
 // GA4 config
 const GA4_PROPERTY_ID = '533922241';
-const PAGE_PATH = '/listings/648-F-Street-Website.html';
+const PAGE_PATH = '/listings/215-I-Street';
 
 // Service account credentials
 const SA_EMAIL = 'burnshomes-ga4-reader@burnshomes-reports.iam.gserviceaccount.com';
@@ -252,7 +252,7 @@ async function fetchData() {
     const token = await getAccessToken();
     const headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
     const baseUrl = `https://analyticsdata.googleapis.com/v1beta/properties/${GA4_PROPERTY_ID}:runReport`;
-    const filter = { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'CONTAINS', value: '/648-F-Street' } } };
+    const filter = { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'CONTAINS', value: '/listings/215-I-Street' } } };
 
     // Summary metrics
     const summaryResp = await fetch(baseUrl, {
