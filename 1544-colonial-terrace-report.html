@@ -87,6 +87,11 @@ body {
 .platform-grid { display: grid; grid-template-columns: 1fr 1fr; width: 100%; margin-top: 14px; border: 0.5px solid #1a1a1a; }
 .platform-col { padding: 16px 12px; text-align: center; border-right: 0.5px solid #1a1a1a; }
 .platform-col:last-child { border-right: none; }
+@media (max-width: 600px) {
+  .platform-grid { grid-template-columns: 1fr; }
+  .platform-col { border-right: none; border-bottom: 0.5px solid #1a1a1a; }
+  .platform-col:last-child { border-bottom: none; }
+}
 .platform-name { font-size: 9pt; letter-spacing: 0.18em; color: #1c3668; font-weight: bold; text-transform: uppercase; margin-bottom: 14px; }
 .platform-metrics { display: flex; justify-content: space-around; }
 .metric { flex: 1; }
