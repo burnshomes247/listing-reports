@@ -105,6 +105,7 @@ body {
 .prospect-table tr:last-child td { border-bottom: none; }
 .prospect-table .p-name { font-weight: bold; white-space: nowrap; width: 1%; }
 .prospect-table .p-notes { color: #333; }
+.prospect-table tr.previewed td { background: #fff6c9; }
 
 /* Date range picker */
 .date-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
@@ -181,13 +182,13 @@ body {
     </div>
 
     <div class="section-rule"></div>
-    <div class="section-label">Prospect Activity</div>
+    <div class="section-label">Prospect Activity (prospects who previewed the property in yellow)</div>
     <table class="prospect-table">
       <thead>
         <tr><th>Name</th><th>Notes</th></tr>
       </thead>
       <tbody>
-        <tr>
+        <tr class="previewed">
           <td class="p-name">Rob Furgeson</td>
           <td class="p-notes">His client submitted an offer.</td>
         </tr>
@@ -203,7 +204,7 @@ body {
           <td class="p-name">Jeff Chreky</td>
           <td class="p-notes">(301) 455-1441 · Reached out and his clients may want to get in sometime soon. Following up.</td>
         </tr>
-        <tr>
+        <tr class="previewed">
           <td class="p-name">Clay Chamberlin</td>
           <td class="p-notes">Client would need both main and upper level hardwoods redone. Widowed, currently lives in Country Club Hills, has a 17-year-old autistic son. Unsure about airplane noise at this property. House might be a bit too dark for her. Looking for proximity to a special school program her son could walk to. Would need the laundry room moved to the second level.</td>
         </tr>
