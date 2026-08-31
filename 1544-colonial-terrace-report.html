@@ -42,6 +42,7 @@ body {
 .date-line { font-size: 8pt; letter-spacing: 0.14em; color: #888; margin-top: 6px; text-align: center; text-transform: uppercase; }
 .section-rule { width: calc(100% - 40px); height: 0.6px; background: #1a1a1a; margin-top: 24px; }
 .section-label { font-size: 11pt; font-weight: bold; letter-spacing: 0.1em; color: #1a1a1a; margin-top: 14px; text-align: center; text-transform: uppercase; }
+.section-sublabel { display: block; font-size: 7pt; font-weight: normal; letter-spacing: 0.08em; color: #888; text-transform: none; margin-top: 4px; }
 
 /* Loading state */
 .loading { text-align: center; padding: 40px; font-size: 9pt; letter-spacing: 0.2em; color: #888; text-transform: uppercase; }
@@ -182,7 +183,7 @@ body {
     </div>
 
     <div class="section-rule"></div>
-    <div class="section-label">Prospect Activity (prospects who previewed the property in yellow)</div>
+    <div class="section-label">Prospect Activity<span class="section-sublabel">(prospects who previewed the property in yellow)</span></div>
     <table class="prospect-table">
       <thead>
         <tr><th>Name</th><th>Notes</th></tr>
