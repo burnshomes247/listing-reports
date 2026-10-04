@@ -81,8 +81,8 @@ body {
 
 /* Footer */
 .footer-rule { width: calc(100% - 40px); height: 0.6px; background: #1a1a1a; margin-top: 24px; }
-.footer-text { font-size: 7pt; letter-spacing: 0.1em; color: #bbb; text-align: center; margin-top: 10px; line-height: 2; text-transform: uppercase; margin-bottom: 8px; }
-.footer-name { font-size: 7.5pt; letter-spacing: 0.16em; color: #1a1a1a; font-weight: bold; }
+.footer-text { font-size: 13pt; letter-spacing: 0.06em; color: #bbb; text-align: center; margin-top: 10px; line-height: 2; text-transform: uppercase; margin-bottom: 8px; }
+.footer-name { font-size: 13pt; letter-spacing: 0.06em; color: #1a1a1a; font-weight: bold; }
 
 /* Platform stats */
 .platform-grid { display: grid; grid-template-columns: 1fr 1fr; width: 100%; margin-top: 14px; border: 0.5px solid #1a1a1a; }
@@ -104,10 +104,11 @@ body {
 /* Prospect table */
 .prospect-table { width: 100%; margin-top: 14px; border-collapse: collapse; border: 0.5px solid #1a1a1a; }
 .prospect-table th { font-size: 7pt; letter-spacing: 0.18em; color: #888; text-transform: uppercase; text-align: left; padding: 8px 10px; border-bottom: 0.6px solid #1a1a1a; background: #f7f7f7; }
-.prospect-table td { font-size: 8pt; color: #1a1a1a; padding: 9px 10px; border-bottom: 0.4px solid #ddd; vertical-align: top; line-height: 1.5; }
+.prospect-table td { font-size: 11pt; color: #1a1a1a; padding: 9px 10px; border-bottom: 0.4px solid #ddd; vertical-align: top; line-height: 1.5; }
 .prospect-table tr:last-child td { border-bottom: none; }
 .prospect-table .p-name { font-weight: bold; white-space: nowrap; width: 1%; }
 .prospect-table .p-notes { color: #333; }
+@media (max-width: 600px) { .prospect-table .p-name { white-space: normal; } }
 .prospect-table tr.previewed td { background: #fff6c9; }
 .prospect-table tr.openhouse td { background: #dceefb; }
 .note-update { display: block; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #bbb; }
