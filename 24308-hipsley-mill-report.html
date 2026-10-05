@@ -340,7 +340,7 @@ async function fetchData() {
     const token = await getAccessToken();
     const headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
     const baseUrl = `https://analyticsdata.googleapis.com/v1beta/properties/${GA4_PROPERTY_ID}:runReport`;
-    const filter = { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'CONTAINS', value: '/listings/11776stratfordplace1204' } } };
+    const filter = { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'CONTAINS', value: '/listings/24308hipsleymillrd' } } };
 
     // Summary metrics
     const summaryResp = await fetch(baseUrl, {
