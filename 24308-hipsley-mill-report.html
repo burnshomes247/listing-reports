@@ -110,6 +110,7 @@ body {
 .prospect-table .p-notes { color: #333; }
 @media (max-width: 600px) { .prospect-table .p-name { white-space: normal; } }
 .prospect-table tr.previewed td { background: #fff6c9; }
+.prospect-table tr.notinterested td { background: #fde8e8; }
 .note-update { display: block; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #bbb; }
 .note-update-label { display: block; font-size: 6.5pt; letter-spacing: 0.16em; color: #1c3668; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
 
@@ -208,7 +209,7 @@ body {
     </div>
 
     <div class="section-rule"></div>
-    <div class="section-label">Prospect Activity<span class="section-sublabel">(prospects who previewed the property in yellow)</span></div>
+    <div class="section-label">Prospect Activity<span class="section-sublabel">(prospects who previewed the property in yellow &middot; not interested in light red)</span></div>
     <table class="prospect-table">
       <thead>
         <tr><th>Name</th><th>Notes</th></tr>
@@ -222,11 +223,11 @@ body {
           <td class="p-name">David Jimenez</td>
           <td class="p-notes">Showing scheduled Sunday, October 11, 2026, 2:00&ndash;2:45 PM.</td>
         </tr>
-        <tr>
+        <tr class="notinterested">
           <td class="p-name">Maria Kolick</td>
           <td class="p-notes">Showing scheduled Tuesday, October 6, 2026, 1:30&ndash;2:15 PM.<span class="note-update"><span class="note-update-label">Update</span>Feedback: client not interested. Not a good fit for this family. The agent noted a yellow jacket nest going in and out of the hot tub, with bees swarming during the showing.</span></td>
         </tr>
-        <tr>
+        <tr class="notinterested">
           <td class="p-name">Missy Raffa</td>
           <td class="p-notes">Showing scheduled Tuesday, October 6, 2026, 9:30&ndash;10:30 AM.<span class="note-update"><span class="note-update-label">Update</span>Feedback: client not interested. The floor plan won't work for their family.</span></td>
         </tr>
